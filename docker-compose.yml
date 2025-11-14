@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    command: >
+      postgres
+        -c synchronous_commit=off
+        -c checkpoint_timeout=30min
+        -c checkpoint_completion_target=0.9
+        -c max_wal_size=8GB
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db_data_postgres:/var/lib/postgresql/data
+      # SQL dump files here will restore backups 
+      # - ./datasets/postgres:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - ./db_data_redis:/data
+    restart: unless-stopped
